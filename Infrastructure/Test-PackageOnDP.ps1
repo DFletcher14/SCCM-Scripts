@@ -64,7 +64,7 @@ foreach($package in $PkgID){
         Write-Log "IniPath: $iniPath"
 
     # Check Content lib for package ini's
-    if(Test-Path $iniPath){
+    if($iniPath){
         Write-Log "$package was found in Content Library on $DPName"
         Write-Host "$package was found in Content Library on $DPName" -ForegroundColor Green
     }else{
@@ -72,4 +72,3 @@ foreach($package in $PkgID){
         Write-Host "$package was not found in Content Library on $DPName" -ForegroundColor Yellow
     }
 }
-

@@ -45,31 +45,31 @@ foreach($package in $PkgID){
     $wmiObj = Get-WmiObject -ComputerName $DPName -Namespace Root\SCCMDP -Class SMS_PackagesInContLib -Filter "PackageID = '$package'" 
     
     if($wmiObj){
-        try{
-            # Check WMI for packageIDs
-            Write-Log "$package found in WMI on $DPName"
-            Write-Host "$package found in WMI on $DPName" -ForegroundColor Green
-        }catch{
+        # Check WMI for packageIDs
+        Write-Log "$package found in WMI on $DPName"
+        Write-Host "$package found in WMI on $DPName" -ForegroundColor Green
+    }else{
         Write-Log "$package could not be found from WMI on $DPName."
         Write-Host "$package could not be found from WMI on $DPName." -ForegroundColor Red
-        }
     }
 
-    # Set Content Lib Variables
-    $ContentLib = Invoke-Command -ComputerName $DPName -Credential $creds -ScriptBlock  {(Get-ItemProperty HKLM:SOFTWARE\Microsoft\SMS\DP).ContentLibraryPath}
+        # Set Content Lib Variables
+        $ContentLib = Invoke-Command -ComputerName $DPName -Credential $creds -ScriptBlock  {(Get-ItemProperty HKLM:SOFTWARE\Microsoft\SMS\DP).ContentLibraryPath}
+        Write-Log "ContentLib: $ContentLib"
         $driveletter = $ContentLib[0]
+        Write-Log "DriverLetter: $driveletter"
         $Location = "\\" + $DPName + "\$driveletter$\sccmcontentlib\pkglib"
+        Write-Log "Location: $Location"
         $iniPath = Join-Path $Location "$package.INI"
+        Write-Log "IniPath: $iniPath"
+
     # Check Content lib for package ini's
     if(Test-Path $iniPath){
-        try{
-            Write-Log "$package was found in Content Library on $DPName"
-            Write-Host "$package was found in Content Library on $DPName" -ForegroundColor Green
-        }catch{
-            Write-Log "$package was not found in Content Library on $DPName"
-            Write-Host "$package was not found in Content Library on $DPName" -ForegroundColor Yellow
-        }
+        Write-Log "$package was found in Content Library on $DPName"
+        Write-Host "$package was found in Content Library on $DPName" -ForegroundColor Green
+    }else{
+        Write-Log "$package was not found in Content Library on $DPName"
+        Write-Host "$package was not found in Content Library on $DPName" -ForegroundColor Yellow
     }
-            
 }
 
